@@ -30,3 +30,5 @@ Multiple Object Tracking (MOT) aims to detect all objects in a video sequence an
 2. **Mask Preprocessing**: it takes the masks extracted by SAM 2 and converts them onto rich numeric embedding representations that combine form, context and temporal coherence.
 
 3. **Mask Instance Resolver (MIR)**: a Vision-Transformer (ViT)-based network that learns identity consistency. It identifies if all three masks belong to the same object and, therefore, if it can be maintained in a frame in which there was a detection failure.
+
+4. **Decision-Making**: MIR provides as an output a probability number (whether the three masks belong to the same object). This temporal coherence information is converted onto a tracking decision: a threshold $\gamma$ is used to decide whether the object is recovered or definitively discarded.
