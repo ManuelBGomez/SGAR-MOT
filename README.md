@@ -1,34 +1,101 @@
+<div align="center">
+
 # SGAR-MOT
-Segmentation-Guided Association Refinement in Multiple Object Tracking
+**Segmentation-Guided Association Refinement in Multiple Object Tracking**
 
-> **NOTE**: Code and more information about the project will be available when article is accepted.
+[Manuel Bendaña](mailto:manuel.bendana.gomez@usc.es) &nbsp;·&nbsp; [Victor M. Brea](mailto:victor.brea@usc.es) &nbsp;·&nbsp; [Manuel Mucientes](mailto:manuel.mucientes@usc.es)
 
-![SGAR-MOT](./images/SGAR-MOT.png)
+*Centro Singular de Investigación en Tecnoloxías Intelixentes (CiTIUS), Universidade de Santiago de Compostela*
 
-## Abstract
+</div>
 
-Multiple Object Tracking (MOT) aims to detect all objects in a video sequence and maintain consistent identities across frames. While Tracking-by-Detection (TbD) remains the dominant paradigm due to its effectiveness, its reliance on object detectors makes it vulnerable to failures, particularly in occlusion scenarios. These failures often result in fragmented trajectories and degraded tracking performance. In this work, we propose SGAR-MOT -which stands for Segmentation-Guided Association Refinement in Multiple Object Tracking-, a novel framework that enhances TbD pipelines by recovering object tracks lost due to detection errors. SGAR-MOT introduces the Object Recovery Protocol (ORP), which leverages segmentation masks and integrates a video segmentation method with a Vision Transformer-based module, the Mask Instance Resolver (MIR), to assess track continuity. SGAR-MOT incorporates mask-level evidence and a learned identity-consistency verification step through MIR to determine whether a lost track should be reinstated. Experimental results across multiple benchmarks, including MOT20, SportsMOT and VisDrone, demonstrate that SGAR-MOT consistently outperforms its baseline tracker and achieves competitive results against state-of-the-art methods. These improvements highlight the effectiveness of integrating segmentation-guided reasoning into a conventional TbD pipeline, providing a hybrid tracking paradigm that is more robust to detector failures.
+> **Code release in progress.** The tracker, the MIR weights and the code will be published in this repository upon acceptance of the article.
+
+---
+
+## Overview
+
+Tracking-by-Detection (TbD) is the dominant paradigm in Multiple Object Tracking (MOT), but it inherits the failures of its detector: when an object is missed —typically under occlusion— the associated track is considered *lost*. As a result, the trajectory fragments, and the object often reappears later under a new identity.
+
+**SGAR-MOT** handles detector failures directly. Instead of discarding a track the moment the association step leaves it unmatched, SGAR-MOT tries to determine if *the object is still there*. For doing so, it uses **segmentation masks** rather than bounding boxes, as overlapping boxes can mix pixels from several instances, whereas masks isolate the target and keep distinctive shape cues robust to partial occlusions.
+
+The answer to that question is produced by our **Object Recovery Protocol (ORP)**, a module that couples a video segmentation model (SAM 2) with a novel learned identity-verification network (MIR). Tracking still runs —and still outputs— bounding boxes, using segmentation masks internally for object recovery.
+
+<div align="center">
+<img src="./images/SGAR-MOT.png" alt="SGAR-MOT architecture" width="90%">
+<p><em>SGAR-MOT architecture: the conventional TbD pipeline (blue) and the Object Recovery Protocol (red).</em></p>
+</div>
 
 ## Main contributions
 
-* **Object Recovery Protocol (ORP)**: a novel module that manages tracks typically considered as lost in the standard TbD pipeline due to detector failures. It leverages segmentation masks and integrates a video segmentation method alongside a novel ViT-based network, the Mask Instance Resolver (MIR), which determines whether a track can be successfully recovered or should be definitively discarded.
+* **Object Recovery Protocol (ORP).** A novel module that manages tracks typically considered as lost in the standard TbD pipeline due to detector failures. It leverages segmentation masks and integrates a video segmentation method alongside a novel ViT-based network, the Mask Instance Resolver (MIR), which verifies identity through a learned spatiotemporal representation over multiple mask embeddings —and not through geometric thresholds or handcrafted similarity metrics.
 
-* **SGAR-MOT tracker**: a new tracking framework that integrates ORP module into a conventional bounding box-based TbD architecture. This enables the recovery of tracks that would otherwise be lost in each frame due to detector failures, enhancing robustness in occlusion scenarios through the use of segmentation masks.
+* **SGAR-MOT tracker.** A new tracking framework that integrates the ORP module into a conventional bounding box-based TbD architecture. It couples box-level detection with mask-level identity reasoning, improving the robustness under occlusion scenarios.
 
-* **Empirical validation**: we demonstrate that SGAR-MOT outperforms its baseline tracker and achieves competitive results across multiple datasets, including widely used MOT benchmarks such as MOT20, as well as more challenging scenarios like SportsMOT and VisDrone. Notably, SGAR-MOT achieves the highest average performance among all evaluated methods, confirming the effectiveness of masks in improving tracking performance under challenging conditions.
+* **Empirical validation.** SGAR-MOT outperforms its baseline tracker (ByteTrack) and achieves competitive results across multiple datasets (MOT20, SportsMOT and VisDrone), obtaining the **best average ranking** among all evaluated methods. ORP also transfers: attached to SORT with the *same, unretrained* MIR weights, it still improves MOTA and HOTA on all three datasets, confirming the effectiveness of masks in improving tracking performance under challenging conditions.
 
-## ORP overview
+## Results
 
-![ORP](./images/ORP_SAM2_MIR.png)
+### Against the baseline (ByteTrack, same YOLOX detector)
 
-1. **Mask Extraction**: it is based on the use of SAM 2 for obtaining visual information of each object. For that, it leverages information of its previous state and its neighborhood. Three masks are extracted for the object in three key moments:
+*Errors = FP + FN. Test sets in all three cases.*
 
-    * $M_t$: current frame.
-    * $M_{t-1}$: previous frame.
-    * $M_{DET}$: detection frame, which represents a previous frame in which the detection was reliable.
+| Dataset | Method | MOTA ↑ | HOTA ↑ | IDF1 ↑ | FP ↓ | FN ↓ | Errors ↓ | IDSW ↓ |
+|---|---|---|---|---|---|---|---|---|
+| **MOT20** | ByteTrack | 74.0 | **59.2** | **72.6** | 16,749 | 116,927 | 133,676 | **1,069** |
+| | **SGAR-MOT** | **74.4** | 59.0 | 72.1 | 23,085 | **108,483** | **131,568** | 1,090 |
+| | *Difference* | *+0.4* | *−0.2* | *−0.5* | *+6,336* | *−8,444* | ***−2,108*** | *+21* |
+| **SportsMOT** | ByteTrack | 93.9 | 62.6 | 69.6 | **28,780** | 30,160 | 58,940 | 3,525 |
+| | **SGAR-MOT** | **94.1** | **63.4** | **70.7** | 30,885 | **26,016** | **56,901** | **3,265** |
+| | *Difference* | *+0.2* | *+0.8* | *+1.1* | *+2,105* | *−4,144* | ***−2,039*** | *−260* |
+| **VisDrone** | ByteTrack | 31.2 | 34.2 | 40.2 | **12,061** | 198,533 | 210,594 | **1,260** |
+| | **SGAR-MOT** | **31.4** | **34.4** | **40.5** | 12,613 | **197,458** | **210,071** | 1,265 |
+| | *Difference* | *+0.2* | *+0.2* | *+0.3* | *+552* | *−1,075* | ***−523*** | *+5* |
 
-2. **Mask Preprocessing**: it takes the masks extracted by SAM 2 and converts them onto rich embedding representations that combine form, context and temporal coherence.
+ORP converts false negatives into recovered tracks on every dataset. Although it introduces some false positives, the net error count always drops. On SportsMOT, the gain is largest in identity-aware metrics (HOTA and IDF1), driven by 260 fewer identity switches. MOT20 is the hardest case —huge density: 123.2 objects per frame on average—, where SAM 2 more often propagates a mask onto a neighbouring instance; HOTA and IDF1 dip slightly there, though total errors still fall.
 
-3. **Mask Instance Resolver (MIR)**: a Vision-Transformer (ViT)-based network that learns identity consistency. It identifies if all three masks belong to the same object and, therefore, whether the track should be maintained in a frame where a detection failure occurred.
+### Average ranking across the three benchmarks
 
-4. **Decision-Making**: MIR provides as an output a probability number (whether the three masks belong to the same object). This temporal coherence information is converted into a tracking decision: a threshold $\gamma$ is used to decide whether the object is recovered or definitively discarded.
+SGAR-MOT ranks first only on VisDrone, but it is the **only method in the top three everywhere**, which gives it the best global average. Pairwise Wilcoxon signed-rank tests on per-sequence MOTA against ByteTrack and HybridSORT —the second- and third-best methods by average ranking— reject the null hypothesis at `p < 0.05`.
+
+| Method | MOT20 | SportsMOT | VisDrone | **Average** |
+|---|:---:|:---:|:---:|:---:|
+| **SGAR-MOT (ours)** | 3 | 3 | 1 | **2.33** |
+| ByteTrack (ECCV 2022) | 4 | 4 | 2 | 3.33 |
+| HybridSORT (AAAI 2024) | 1 | 2 | 9 | 4.00 |
+| SORT + ORP | 5 | 5 | 6 | 5.33 |
+| QDTrack (TPAMI 2023) | 2 | 9 | 5 | 5.33 |
+| OC-SORT (CVPR 2023) | 7 | 1 | 8 | 5.33 |
+| SORT (ICIP 2016) | 6 | 6 | 7 | 6.33 |
+| MOTIP (CVPR 2025) | 9 | 7 | 3 | 6.33 |
+| SambaMOTR (ICLR 2025) | 8 | 8 | 4 | 6.67 |
+
+## Installation and usage
+
+> Placeholder — exact commands, pinned versions and flag names will be finalised with the code release.
+
+## Citation
+
+```bibtex
+@article{bendana2026sgarmot,
+  title   = {Segmentation-Guided Association Refinement in Multiple Object Tracking},
+  author  = {Benda{\~n}a, Manuel and Brea, Victor M. and Mucientes, Manuel},
+  journal = {(under review)},
+  year    = {2026}
+}
+```
+
+## Acknowledgements
+
+SGAR-MOT builds on [ByteTrack](https://github.com/ifzhang/ByteTrack),
+[YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) and
+[SAM 2](https://github.com/facebookresearch/sam2) — our thanks to their authors.
+
+<details>
+<summary>Funding</summary>
+This work has received financial support from the Agencia Estatal de Investigación (Spain) (grant numbers PID2023-149549NB-I00 and PID2024-155219OB-C32), the "Cátedra Televés en Diseño Microelectrónico" by the PERTE Chip (grant number TSI-069100-2023-0010), the Galician Ministry for Education, Universities and Professional Training and the "ERDF A way of making Europe" through grants "Galician Research Centre Accreditation 2024-2027 ED431G-2023/04" and "Reference Competitive Group Accreditation 2026-2029 ED431C 2026/52". Manuel Bendaña is supported by the Spanish Ministerio de Universidades under the FPU national plan (grant number FPU22/01828).
+</details>
+
+## License
+
+To be defined with the code release.
