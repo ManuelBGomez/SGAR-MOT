@@ -1,0 +1,27 @@
+# Mask Instance Resolver (MIR) -- parameters from the configuration used in the paper.
+
+transformer:
+    num_layer: 12
+    nhead: 12
+    dim_embedding: 12544
+    trans_dim: 768
+    ff_size: 3072
+    activation: gelu
+    dropout_p: 0.1
+    # Weights loaded at tracking time. Leave as "" to build the network untrained.
+    model: "pretrained/mir_sgar_mot.pth"
+
+trainer:
+    device: gpu
+    seed: 9090
+
+    batch_size: 1024
+    num_epochs: 600
+    warmup_epochs: 1
+    beta_z: 0.01
+
+    max_lr: 1.0e-01
+    weight_decay: 1.0e-05
+
+    nb_worker: 2
+    print_iter: 10000

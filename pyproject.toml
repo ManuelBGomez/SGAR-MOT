@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sgar-mot"
+version = "1.0.0"
+description = "SGAR-MOT: Segmentation-Guided Association Refinement in Multiple Object Tracking"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+classifiers = ["License :: Other/Proprietary License"]
+dependencies = [
+    "pyyaml",
+    "scikit-learn",
+    "tqdm",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sgar_mot*"]

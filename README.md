@@ -7,9 +7,12 @@
 
 *Centro Singular de Investigación en Tecnoloxías Intelixentes (CiTIUS), Universidade de Santiago de Compostela*
 
-</div>
+[![Paper](https://img.shields.io/badge/Neurocomputing-10.1016%2Fj.neucom.2026.135176-orange)](https://doi.org/10.1016/j.neucom.2026.135176)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](./LICENSE)
 
-> **Code release in progress.** The tracker, the MIR weights and the code will be published in this repository upon acceptance of the article.
+**[Read the paper](https://www.sciencedirect.com/science/article/pii/S0925231226025749)** · *Neurocomputing* (2026)
+
+</div>
 
 ---
 
@@ -72,16 +75,23 @@ SGAR-MOT ranks first only on VisDrone, but it is the **only method in the top th
 
 ## Installation and usage
 
-> Placeholder — exact commands, pinned versions and flag names will be finalised with the code release.
+**[docs/TUTORIAL.md](./docs/TUTORIAL.md)** covers everything: installation (a Dockerfile is provided), the expected data layout, the commands for MOT20, SportsMOT and VisDrone, and even how to train MIR, although models are also provided.
 
 ## Citation
 
+If you find this work useful, please star the project and consider citing us as:
+
 ```bibtex
-@article{bendana2026sgarmot,
-  title   = {Segmentation-Guided Association Refinement in Multiple Object Tracking},
-  author  = {Benda{\~n}a, Manuel and Brea, Victor M. and Mucientes, Manuel},
-  journal = {(under review)},
-  year    = {2026}
+@article{Bendana2026SGARMOT,
+  title   = {Segmentation-guided association refinement in multiple object tracking},
+  author  = {Benda{\~n}a, Manuel and 
+             Brea, Victor M. and
+             Mucientes, Manuel},
+  journal = {Neurocomputing},
+  pages   = {135176},
+  year    = {2026},
+  issn    = {0925-2312},
+  doi     = {10.1016/j.neucom.2026.135176}
 }
 ```
 
@@ -98,4 +108,6 @@ This work has received financial support from the Agencia Estatal de Investigaci
 
 ## License
 
-To be defined with the code release.
+The code written for SGAR-MOT is released under the [PolyForm Noncommercial License 1.0.0](./LICENSE): free to use, modify and redistribute for any noncommercial purpose, which explicitly includes research, teaching and use by public research organizations. For commercial use, contact the authors.
+
+The released MIR checkpoint is under CC BY-NC 4.0. Third-party code redistributed here keeps its own licence — SAM 2 (Apache 2.0), ByteTrack (MIT), YOLOX (Apache 2.0) — see [THIRD_PARTY.md](./THIRD_PARTY.md).

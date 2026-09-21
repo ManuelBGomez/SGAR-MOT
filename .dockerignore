@@ -1,0 +1,6 @@
+images/
+docs/
+*.pth
+*.pt
+*.pth.tar
+__pycache__/

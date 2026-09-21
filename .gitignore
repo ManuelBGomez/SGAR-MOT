@@ -1,0 +1,11 @@
+# Checkpoints -- downloaded, never committed (see docs/TUTORIAL.md)
+*.pth
+*.pth.tar
+*.pt
+
+# Tracker output
+YOLOX_outputs/
+
+# Python
+__pycache__/
+*.py[cod]
