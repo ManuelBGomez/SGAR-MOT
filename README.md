@@ -110,4 +110,4 @@ This work has received financial support from the Agencia Estatal de Investigaci
 
 The code written for SGAR-MOT is released under the [PolyForm Noncommercial License 1.0.0](./LICENSE): free to use, modify and redistribute for any noncommercial purpose, which explicitly includes research, teaching and use by public research organizations. For commercial use, contact the authors.
 
-The released MIR checkpoint is under CC BY-NC 4.0. Third-party code redistributed here keeps its own licence — SAM 2 (Apache 2.0), ByteTrack (MIT), YOLOX (Apache 2.0) — see [THIRD_PARTY.md](./THIRD_PARTY.md).
+Third-party code redistributed here keeps its own licence — SAM 2 (Apache 2.0), ByteTrack (MIT), YOLOX (Apache 2.0) — see [THIRD_PARTY.md](./THIRD_PARTY.md).
